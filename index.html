@@ -391,7 +391,7 @@
                     </div>
                     <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
                         <h3 class="font-semibold text-slate-900 mb-2">Email Support</h3>
-                        <p class="text-slate-600 text-sm">jsquetulio@faculty.mcu.edu.ph/p>
+                        <p class="text-slate-600 text-sm">jsquetulio@faculty.mcu.edu.ph</p>
                     </div>
                     <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
                         <h3 class="font-semibold text-slate-900 mb-2">Operating Hours</h3>
@@ -651,9 +651,9 @@
             "OpenLearning": [
                 { val: "forgot password", text: "Forgot Password" },
                 { val: "not registered account", text: "Account Not Registered" },
-                { val: "not showing courses", text: "No Courses are showing" },
+                { val: "not showing courses", text: "Courses are not showing" },
                 { val: "Others", text: "others: Specific Concern" }
-            ]
+            ],
             "Student Portal": [
                 { val: "forgot password", text: "Forgot Password" },
                 { val: "Others", text: "Others: Specify Concern" }
@@ -693,7 +693,7 @@
             }
         });
 
-        // Step 1: Handle Form Submission & Trigger EmailJS OTP with Fallback[cite: 1]
+        // Step 1: Handle Form Submission & Trigger EmailJS OTP with Fallback
         concernForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -730,7 +730,7 @@
             try {
                 await sendEmailWithFallback('otp', templateParams);
                 
-                // Success! Switch UI to OTP screen[cite: 1]
+                // Success! Switch UI to OTP screen
                 document.getElementById('displayPersonalEmail').textContent = pendingFormData.personalEmail;
                 concernFormContainer.classList.add('hidden');
                 otpContainer.classList.remove('hidden');
