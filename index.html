@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support Portal | Account Concerns</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            padding-top: 72px;
+            background-color: #f8fafc;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            width: 90%;
+            max-width: 480px;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-backdrop.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-pending {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-in-progress {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-completed {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+
+        .transition-all-ease {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link.active {
+            color: #4F46E5;
+            font-weight: 600;
+            border-bottom: 2px solid #4F46E5;
+        }
+
+        /* Custom Inputs */
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
+            background-color: #F8FAFC;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #4F46E5;
+            background-color: #FFF;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-field:disabled {
+            background-color: #E2E8F0;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <nav class="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">SHS Accounts Support</span>
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <button onclick="switchTab('home')" id="nav-home"
+                    class="nav-link active text-slate-500 hover:text-indigo-600 pb-1">Home</button>
+                <button onclick="switchTab('about')" id="nav-about"
+                    class="nav-link text-slate-500 hover:text-indigo-600 pb-1">About</button>
+                <button onclick="switchTab('contact')" id="nav-contact"
+                    class="nav-link text-slate-500 hover:text-indigo-600 pb-1">Contact</button>
+            </div>
+            <div class="md:hidden">
+                <button id="mobileMenuBtn" class="text-slate-500 hover:text-indigo-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden bg-white border-t border-slate-100 shadow-lg absolute w-full">
+            <button onclick="switchTab('home')"
+                class="block w-full text-left px-6 py-4 hover:bg-slate-50 text-slate-700">Home</button>
+            <button onclick="switchTab('about')"
+                class="block w-full text-left px-6 py-4 hover:bg-slate-50 text-slate-700">About</button>
+            <button onclick="switchTab('contact')"
+                class="block w-full text-left px-6 py-4 hover:bg-slate-50 text-slate-700">Contact</button>
+        </div>
+    </nav>
+
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-4xl flex-grow">
+
+        <section id="section-home" class="transition-all-ease opacity-100">
+            <header class="text-center mb-10 pt-4">
+                <h1 class="text-3xl md:text-5xl font-bold text-slate-900 tracking-tight mb-4">Account Recovery Portal
+                </h1>
+                <p class="text-slate-500 text-lg max-w-2xl mx-auto">Submit your account credential concerns below. We
+                    will verify your identity and send resolution instructions directly to your personal email.</p>
+            </header>
+
+            <main id="mainContent">
+                <div id="concernFormContainer"
+                    class="bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-slate-200 transition-all-ease">
+                    <form id="concernRequestForm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="designation"
+                                    class="block text-slate-700 font-semibold mb-2 text-sm">Designation</label>
+                                <select id="designation" name="designation" class="input-field" required>
+                                    <option value="" disabled selected>Select position...</option>
+                                    <option value="Student">Student</option>
+                                    <option value="Teacher">Teacher</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="name" class="block text-slate-700 font-semibold mb-2 text-sm">Full
+                                    Name</label>
+                                <input type="text" id="name" name="name" class="input-field"
+                                    placeholder="Last Name, First Name" required>
+                            </div>
+                        </div>
+
+                        <div id="student-specific-fields"
+                            class="hidden grid-cols-1 md:grid-cols-2 gap-6 mb-6 bg-slate-50 p-5 rounded-xl border border-slate-100">
+                            <div>
+                                <label for="studentNumber"
+                                    class="block text-slate-700 font-semibold mb-2 text-sm">Student Number</label>
+                                <input type="text" id="studentNumber" name="studentNumber" class="input-field bg-white"
+                                    placeholder="e.g., 2023-12345">
+                            </div>
+                            <div>
+                                <label for="grade" class="block text-slate-700 font-semibold mb-2 text-sm">Grade &
+                                    Section</label>
+                                <input type="text" id="grade" name="grade" class="input-field bg-white"
+                                    placeholder="e.g., Grade 10 - St. John">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="email" class="block text-slate-700 font-semibold mb-2 text-sm">Account Email/Username (with issue)</label>
+                                <input type="text" id="email" name="email" class="input-field"
+                                    placeholder="student@school.edu or username" required>
+                                <p class="text-xs text-slate-400 mt-1">Enter "N/A" if unassigned.</p>
+                            </div>
+                            <div>
+                                <label for="contact" class="block text-slate-700 font-semibold mb-2 text-sm">Contact
+                                    Number</label>
+                                <input type="tel" id="contact" name="contact" class="input-field"
+                                    placeholder="09123456789" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-6 bg-indigo-50/50 p-5 rounded-xl border border-indigo-100">
+                            <label for="personalEmail" class="block text-indigo-900 font-semibold mb-2 text-sm">Active
+                                Personal Email</label>
+                            <input type="email" id="personalEmail" name="personalEmail"
+                                class="input-field bg-white border-indigo-200" placeholder="your.personal@gmail.com"
+                                required>
+                            <p class="text-xs text-indigo-600 mt-2 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                This is where you will receive your updated password and instructions.
+                            </p>
+                        </div>
+
+                        <!-- Platform Selection -->
+                        <div class="mb-6">
+                            <label for="platformType" class="block text-slate-700 font-semibold mb-2 text-sm">Select Platform or System</label>
+                            <select id="platformType" name="platformType" class="input-field" required>
+                                <option value="" disabled selected>Choose platform...</option>
+                                <option value="Microsoft Account">Microsoft Account</option>
+                                <option value="OpenLearning">OpenLearning</option>
+                                <option value="Student Portal">Student Portal</option>
+                            </select>
+                        </div>
+
+                        <!-- Concern Selection (Dynamic) -->
+                        <div class="mb-8">
+                            <label for="concernType" class="block text-slate-700 font-semibold mb-2 text-sm">Select Your Concern</label>
+                            <select id="concernType" name="concernType" class="input-field mb-4" required disabled>
+                                <option value="" disabled selected>Please select a platform first...</option>
+                            </select>
+
+                            <!-- Conditionally shown when 'Others' is selected -->
+                            <div id="otherConcernContainer" class="hidden bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <label for="concern" class="block text-slate-700 font-semibold mb-2 text-xs">Please specify your exact issue:</label>
+                                <textarea id="concern" name="concern" rows="3" class="input-field bg-white"
+                                    placeholder="Briefly explain your concern details..."></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn"
+                            class="w-full bg-indigo-600 text-white font-semibold py-3.5 px-4 rounded-xl hover:bg-indigo-700 transition-all-ease shadow-md hover:shadow-lg focus:ring-4 focus:ring-indigo-100">
+                            Proceed to Verification
+                        </button>
+                    </form>
+                </div>
+
+                <div id="otpContainer"
+                    class="hidden bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-200 text-center max-w-lg mx-auto">
+                    <div class="bg-indigo-100 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Verify Your Email</h2>
+                    <p class="text-slate-500 mb-6 text-sm">We've sent a 6-digit One Time Password (OTP) to <span id="displayPersonalEmail" class="font-semibold text-indigo-600"></span>. Please check your inbox.</p>
+
+                    <div
+                        class="bg-amber-50 border border-amber-100 text-amber-800 text-xs py-2 px-3 rounded-lg mb-6 text-left flex items-start">
+                        <svg class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                            </path>
+                        </svg>
+                        If you don't see the email within a few minutes, check your Spam or Junk folder.
+                    </div>
+
+                    <input type="text" id="otpInput" maxlength="6"
+                        class="text-center text-2xl tracking-[0.5em] font-mono input-field mb-6" placeholder="------">
+
+                    <div class="flex space-x-3">
+                        <button id="cancelOtpBtn"
+                            class="flex-1 bg-slate-100 text-slate-700 font-semibold py-3 rounded-xl hover:bg-slate-200 transition-colors">Cancel</button>
+                        <button id="verifyOtpBtn"
+                            class="flex-1 bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700 transition-all-ease shadow-md">Verify
+                            & Submit</button>
+                    </div>
+                </div>
+
+                <div id="statusCheckPanel"
+                    class="hidden bg-white p-8 rounded-2xl shadow-sm border border-slate-200 transition-all-ease max-w-xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-slate-900">Track Ticket Status</h2>
+                        <button id="backToFormBtn"
+                            class="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Back
+                        </button>
+                    </div>
+                    <form id="statusCheckForm">
+                        <label for="statusEmail" class="block text-slate-700 font-semibold mb-2 text-sm">Personal Email
+                            Used</label>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <input type="email" id="statusEmail" class="input-field"
+                                placeholder="your.personal@gmail.com" required>
+                            <button type="submit"
+                                class="bg-slate-800 text-white font-semibold py-3 px-6 rounded-xl hover:bg-slate-900 transition-all-ease shadow-md whitespace-nowrap">Search</button>
+                        </div>
+                    </form>
+                    <div id="statusResultContainer" class="mt-8"></div>
+                </div>
+
+                <div id="adminPanel"
+                    class="hidden bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-slate-200 transition-all-ease mt-4">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-slate-100 pb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900">Admin Dashboard</h2>
+                            <p class="text-slate-500 text-sm mt-1">Manage and resolve account concerns.</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button id="exportCsvBtn"
+                                class="bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold py-2 px-4 rounded-lg hover:bg-emerald-100 text-sm transition-colors">Export
+                                Data</button>
+                            <button id="logoutBtn"
+                                class="bg-rose-50 text-rose-700 border border-rose-200 font-semibold py-2 px-4 rounded-lg hover:bg-rose-100 text-sm transition-colors">Sign
+                                Out</button>
+                        </div>
+                    </div>
+                    <div id="requestsContainer" class="space-y-6"></div>
+                    <p id="noRequests" class="hidden text-center text-slate-400 py-12 text-lg">No pending tickets in the
+                        queue.</p>
+                </div>
+            </main>
+
+            <footer id="footerNav" class="text-center mt-12 flex flex-col items-center">
+                <button id="checkStatusBtn"
+                    class="text-slate-600 font-medium py-2 px-6 rounded-lg hover:bg-slate-100 transition-all-ease mb-6">
+                    Check Existing Ticket Status
+                </button>
+                <div class="w-16 h-px bg-slate-200 mb-6"></div>
+                <button id="adminLoginBtn"
+                    class="text-xs text-slate-400 hover:text-indigo-600 transition-colors uppercase tracking-wider font-semibold">Staff
+                    Portal</button>
+                <div class="mt-8 text-slate-400 text-xs">
+                    &copy; 2026 MCU Basic Education ICT. All Rights Reserved.
+                </div>
+            </footer>
+        </section>
+
+        <section id="section-about" class="hidden transition-all-ease max-w-3xl mx-auto">
+            <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-200">
+                <h1 class="text-3xl font-bold text-slate-900 mb-6">System Protocol</h1>
+                <p class="text-slate-600 leading-relaxed mb-4">
+                    This portal manages Microsoft 365, student portal, and OpenLearning LMS credential issues for SHS students and faculty.
+                </p>
+                <p class="text-slate-600 leading-relaxed mb-8">
+                    Submit a ticket to request a password reset or report login errors. Resolutions will be communicated
+                    directly to your verified personal email address.
+                </p>
+                <h3 class="text-xl font-bold text-slate-900 mb-4">Security Guidelines</h3>
+                <ul class="list-disc list-inside text-slate-600 space-y-2 ml-2">
+                    <li>ICT staff will never ask for your password.</li>
+                    <li>Ensure your personal email is accurate and accessible.</li>
+                    <li>Tickets are processed during standard office hours.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="section-contact" class="hidden transition-all-ease max-w-4xl mx-auto">
+            <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-slate-200">
+                <h1 class="text-3xl font-bold text-slate-900 mb-8">Contact Information</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
+                        <h3 class="font-semibold text-slate-900 mb-2">Location</h3>
+                        <p class="text-slate-600 text-sm">Basic Education Building<br>6th Floor, SHS Faculty</p>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
+                        <h3 class="font-semibold text-slate-900 mb-2">Email Support</h3>
+                        <p class="text-slate-600 text-sm">jsquetulio@faculty.mcu.edu.ph/p>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
+                        <h3 class="font-semibold text-slate-900 mb-2">Operating Hours</h3>
+                        <p class="text-slate-600 text-sm">Monday - Friday<br>7:30 AM - 3:30 PM</p>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-xl border border-slate-100">
+                        <h3 class="font-semibold text-slate-900 mb-2">Emergency Contact</h3>
+                        <p class="text-slate-600 text-sm">none</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="editTicketModal" class="modal-backdrop hidden">
+        <div class="modal-content max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold mb-4 text-slate-900">Edit Ticket Information</h3>
+            <input type="hidden" id="editTicketId">
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Full Name</label>
+                    <input type="text" id="editName" class="input-field">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Student ID</label>
+                        <input type="text" id="editStudentNumber" class="input-field">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Grade/Section</label>
+                        <input type="text" id="editGrade" class="input-field">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Account / MS Email</label>
+                    <input type="text" id="editMsEmail" class="input-field">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Personal Email</label>
+                    <input type="email" id="editPersonalEmail" class="input-field">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Platform</label>
+                    <select id="editPlatform" class="input-field">
+                        <option value="Microsoft Account">Microsoft Account</option>
+                        <option value="OpenLearning">OpenLearning</option>
+                        <option value="Student Portal">Student Portal</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Contact</label>
+                    <input type="text" id="editContact" class="input-field">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Concern</label>
+                    <textarea id="editConcern" class="input-field" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button id="cancelEditBtn" class="flex-1 bg-slate-100 text-slate-700 font-semibold py-2.5 rounded-lg hover:bg-slate-200">Cancel</button>
+                <button id="saveEditBtn" class="flex-1 bg-indigo-600 text-white font-semibold py-2.5 rounded-lg hover:bg-indigo-700">Update Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminLoginModal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-2 text-slate-900">Admin Authentication</h3>
+            <p class="text-slate-500 mb-6 text-sm">Enter the staff passcode to access the dashboard.</p>
+            <input type="password" id="adminCode" class="input-field mb-6 text-center tracking-[0.2em]"
+                placeholder="••••••••">
+            <div class="flex space-x-3">
+                <button id="cancelLoginBtn"
+                    class="flex-1 bg-slate-100 text-slate-700 font-semibold py-2.5 rounded-lg hover:bg-slate-200">Cancel</button>
+                <button id="submitLoginBtn"
+                    class="flex-1 bg-slate-900 text-white font-semibold py-2.5 rounded-lg hover:bg-slate-800">Authenticate</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="successModal" class="modal-backdrop hidden">
+        <div class="modal-content text-center">
+            <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2 text-slate-900">Ticket Submitted</h3>
+            <p class="text-slate-500 mb-8 text-sm">Your concern has been registered. The resolution will be sent to your
+                personal email once processed.</p>
+            <button id="closeSuccessBtn"
+                class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700">Return to
+                Home</button>
+        </div>
+    </div>
+
+    <div id="confirmationModal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-2 text-rose-600">Delete Record</h3>
+            <p class="text-slate-600 mb-6 text-sm">This action permanently removes the ticket from the database.
+                Proceed?</p>
+            <div class="flex space-x-3">
+                <button id="cancelDeleteBtn"
+                    class="flex-1 bg-slate-100 text-slate-700 font-semibold py-2.5 rounded-lg hover:bg-slate-200">Keep
+                    Ticket</button>
+                <button id="confirmDeleteBtn"
+                    class="flex-1 bg-rose-600 text-white font-semibold py-2.5 rounded-lg hover:bg-rose-700">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Global EmailJS Configuration
+        const EMAIL_CONFIG = {
+            primary: {
+                publicKey: '3iKLFZ_4Oi6t1K9-h',
+                serviceId: 'service_pgu7tej',
+                otpTemplateId: 'template_cmh5u9h',
+                resolutionTemplateId: 'template_c91qmfl'
+            },
+            backup: {
+                publicKey: 'UaY00srPJbOsy41LL',
+                serviceId: 'service_84hjmqc',
+                otpTemplateId: 'template_zwn9aqt',
+                resolutionTemplateId: 'template_oeh3ujw'
+            }
+        };
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPaQWkbXis1eoqB0lGye68BD5KW3Q96MI",
+            authDomain: "shs-accounts-concern.firebaseapp.com",
+            projectId: "shs-accounts-concern",
+            storageBucket: "shs-accounts-concern.firebasestorage.app",
+            messagingSenderId: "1071128921610",
+            appId: "1:1071128921610:web:ea3830fd9261e52de941f3",
+        };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-msft-concerns-app';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const requestsCollectionPath = `artifacts/${appId}/public/data/concerns`;
+        const requestsCollection = collection(db, requestsCollectionPath);
+
+        // Core Fallback Function for Sending Emails
+        async function sendEmailWithFallback(type, templateParams) {
+            const primaryConfig = EMAIL_CONFIG.primary;
+            const backupConfig = EMAIL_CONFIG.backup;
+
+            const primaryTemplateId = type === 'otp' ? primaryConfig.otpTemplateId : primaryConfig.resolutionTemplateId;
+            const backupTemplateId = type === 'otp' ? backupConfig.otpTemplateId : backupConfig.resolutionTemplateId;
+
+            try {
+                console.log("Attempting to send via Primary Account...");
+                await emailjs.send(primaryConfig.serviceId, primaryTemplateId, templateParams, primaryConfig.publicKey);
+                return true;
+            } catch (error) {
+                console.warn("Primary Account failed (likely quota limit). Falling back to Backup Account...", error);
+                
+                try {
+                    await emailjs.send(backupConfig.serviceId, backupTemplateId, templateParams, backupConfig.publicKey);
+                    console.log("Successfully sent via Backup Account.");
+                    return true;
+                } catch (backupError) {
+                    console.error("Backup Account also failed:", backupError);
+                    throw new Error("Failed to send email. Both primary and backup servers failed.");
+                }
+            }
+        }
+
+        // State variables
+        let userId = null;
+        let isAdmin = false;
+        let allRequests = [];
+        let requestIdToDelete = null;
+        let pendingFormData = null;
+        let currentOTP = null;
+        let isInitialSnapshot = true; 
+
+        // Navigation
+        window.switchTab = function (tabName) {
+            ['home', 'about', 'contact'].forEach(id => {
+                document.getElementById(`section-${id}`).classList.add('hidden');
+                const nav = document.getElementById(`nav-${id}`);
+                if (nav) nav.classList.remove('active', 'text-indigo-600');
+            });
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if (activeNav) activeNav.classList.add('active');
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // Authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) { userId = user.uid; listenForRequests(); }
+            else { signInAnonymously(auth).catch(console.error); }
+        });
+
+        // DOM Elements
+        const concernForm = document.getElementById('concernRequestForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const concernFormContainer = document.getElementById('concernFormContainer');
+        const otpContainer = document.getElementById('otpContainer');
+        const successModal = document.getElementById('successModal');
+        const footerNav = document.getElementById('footerNav');
+
+        // Field toggles
+        const designationSelect = document.getElementById('designation');
+        const studentSpecificFields = document.getElementById('student-specific-fields');
+        const studentNumberInput = document.getElementById('studentNumber');
+        const gradeInput = document.getElementById('grade');
+
+        // Platform & Concern Fields
+        const platformTypeSelect = document.getElementById('platformType');
+        const concernTypeSelect = document.getElementById('concernType');
+        const otherConcernContainer = document.getElementById('otherConcernContainer');
+        const concernTextarea = document.getElementById('concern');
+
+        // Admin Elements
+        const adminPanel = document.getElementById('adminPanel');
+        const requestsContainer = document.getElementById('requestsContainer');
+
+        // Listeners for conditional fields
+        designationSelect.addEventListener('change', () => {
+            if (designationSelect.value === 'Student') {
+                studentSpecificFields.classList.remove('hidden');
+                studentSpecificFields.classList.add('grid');
+                studentNumberInput.required = true;
+                gradeInput.required = true;
+            } else {
+                studentSpecificFields.classList.add('hidden');
+                studentSpecificFields.classList.remove('grid');
+                studentNumberInput.required = false;
+                gradeInput.required = false;
+                studentNumberInput.value = '';
+                gradeInput.value = '';
+            }
+        });
+
+        // Dynamic Concern Options Based on Platform
+        const dynamicConcerns = {
+            "Microsoft Account": [
+                { val: "Sign-in error: \"Your license doesn’t include access to Microsoft Teams. Ask your IT admin for access.\"", text: "Sign-in error: \"Your license doesn’t include access to Microsoft Teams. Ask your IT admin for access.\"" },
+                { val: "Locked Account", text: "Locked Account" },
+                { val: "Forgot Password", text: "Forgot Password" },
+                { val: "No Microsoft account yet", text: "No Microsoft account yet" },
+                { val: "Others", text: "Others (to be specific)" }
+            ],
+            "OpenLearning": [
+                { val: "forgot password", text: "Forgot Password" },
+                { val: "not registered account", text: "Account Not Registered" },
+                { val: "not showing courses", text: "No Courses are showing" },
+                { val: "Others", text: "others: Specific Concern" }
+            ]
+            "Student Portal": [
+                { val: "forgot password", text: "Forgot Password" },
+                { val: "Others", text: "Others: Specify Concern" }
+            ]
+        };
+
+        platformTypeSelect.addEventListener('change', () => {
+            const selectedPlatform = platformTypeSelect.value;
+            concernTypeSelect.innerHTML = '<option value="" disabled selected>Choose your issue...</option>';
+            
+            if (dynamicConcerns[selectedPlatform]) {
+                concernTypeSelect.disabled = false;
+                dynamicConcerns[selectedPlatform].forEach(optionData => {
+                    const option = document.createElement('option');
+                    option.value = optionData.val;
+                    option.textContent = optionData.text;
+                    concernTypeSelect.appendChild(option);
+                });
+            } else {
+                concernTypeSelect.disabled = true;
+            }
+
+            // Reset "Others" textarea when platform changes
+            otherConcernContainer.classList.add('hidden');
+            concernTextarea.required = false;
+            concernTextarea.value = '';
+        });
+
+        concernTypeSelect.addEventListener('change', () => {
+            if (concernTypeSelect.value === 'Others') {
+                otherConcernContainer.classList.remove('hidden');
+                concernTextarea.required = true;
+            } else {
+                otherConcernContainer.classList.add('hidden');
+                concernTextarea.required = false;
+                concernTextarea.value = '';
+            }
+        });
+
+        // Step 1: Handle Form Submission & Trigger EmailJS OTP with Fallback[cite: 1]
+        concernForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Sending OTP...';
+
+            const selectedConcernType = concernForm.concernType.value;
+            const finalConcern = selectedConcernType === 'Others' 
+                ? concernForm.concern.value 
+                : selectedConcernType;
+
+            pendingFormData = {
+                studentNumber: concernForm.studentNumber.value,
+                name: concernForm.name.value,
+                designation: concernForm.designation.value,
+                grade: concernForm.grade.value,
+                email: concernForm.email.value.toLowerCase(),
+                personalEmail: concernForm.personalEmail.value.toLowerCase(),
+                platform: concernForm.platformType.value,
+                contact: concernForm.contact.value,
+                concern: finalConcern, 
+                status: 'Pending',
+                createdAt: new Date().toISOString(),
+            };
+
+            currentOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+            const templateParams = {
+                to_name: pendingFormData.name,
+                to_email: pendingFormData.personalEmail,
+                otp_code: currentOTP
+            };
+
+            try {
+                await sendEmailWithFallback('otp', templateParams);
+                
+                // Success! Switch UI to OTP screen[cite: 1]
+                document.getElementById('displayPersonalEmail').textContent = pendingFormData.personalEmail;
+                concernFormContainer.classList.add('hidden');
+                otpContainer.classList.remove('hidden');
+                footerNav.classList.add('hidden');
+            } catch (error) {
+                console.error('EmailJS Fallback Error:', error);
+                showCustomMessage("Failed to send OTP. Email delivery failed on both primary and backup servers.", "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Proceed to Verification';
+            }
+        });
+
+        // Step 2: Handle OTP Verification & Save to Database
+        document.getElementById('verifyOtpBtn').addEventListener('click', async () => {
+            const enteredOtp = document.getElementById('otpInput').value;
+            const btn = document.getElementById('verifyOtpBtn');
+
+            if (enteredOtp === currentOTP) {
+                btn.disabled = true;
+                btn.innerHTML = 'Verifying...';
+
+                try {
+                    await addDoc(requestsCollection, pendingFormData);
+                    concernForm.reset();
+                    concernTypeSelect.disabled = true;
+                    concernTypeSelect.innerHTML = '<option value="" disabled selected>Please select a platform first...</option>';
+                    
+                    document.getElementById('otpInput').value = '';
+                    studentSpecificFields.classList.add('hidden');
+                    studentSpecificFields.classList.remove('grid');
+                    studentNumberInput.required = false;
+                    gradeInput.required = false;
+
+                    otherConcernContainer.classList.add('hidden');
+                    concernTextarea.required = false;
+
+                    otpContainer.classList.add('hidden');
+                    concernFormContainer.classList.remove('hidden');
+                    footerNav.classList.remove('hidden');
+                    showModal(successModal);
+                } catch (error) {
+                    showCustomMessage("System error. Try again.", "error");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Verify & Submit';
+                }
+            } else {
+                showCustomMessage("Invalid OTP. Try again.", "error");
+            }
+        });
+
+        document.getElementById('cancelOtpBtn').addEventListener('click', () => {
+            otpContainer.classList.add('hidden');
+            concernFormContainer.classList.remove('hidden');
+            footerNav.classList.remove('hidden');
+            document.getElementById('otpInput').value = '';
+            currentOTP = null;
+        });
+
+        // Status Check
+        document.getElementById('checkStatusBtn').addEventListener('click', () => {
+            concernFormContainer.classList.add('hidden');
+            document.getElementById('statusCheckPanel').classList.remove('hidden');
+            footerNav.classList.add('hidden');
+        });
+
+        document.getElementById('backToFormBtn').addEventListener('click', () => {
+            document.getElementById('statusCheckPanel').classList.add('hidden');
+            concernFormContainer.classList.remove('hidden');
+            footerNav.classList.remove('hidden');
+            document.getElementById('statusResultContainer').innerHTML = '';
+        });
+
+        document.getElementById('statusCheckForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('statusEmail').value.toLowerCase();
+            const container = document.getElementById('statusResultContainer');
+            container.innerHTML = `<p class="text-center text-slate-500 animate-pulse">Scanning records...</p>`;
+
+            const q = query(requestsCollection, where("personalEmail", "==", email));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                container.innerHTML = `<div class="p-4 bg-rose-50 text-rose-700 rounded-lg text-center text-sm border border-rose-100">No active tickets found for this personal email.</div>`;
+            } else {
+                let requests = [];
+                querySnapshot.forEach(doc => requests.push(doc.data()));
+                requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                const req = requests[0];
+                container.innerHTML = `
+                    <div class="p-6 border border-slate-200 rounded-xl bg-slate-50">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                 <h3 class="font-bold text-slate-800">${req.name}</h3>
+                                 <p class="text-xs text-slate-500">${req.platform || 'System'} Account: ${req.email}</p>
+                            </div>
+                            <span class="status-badge ${req.status === 'Completed' ? 'status-completed' : req.status === 'In Progress' ? 'status-in-progress' : 'status-pending'}">${req.status}</span>
+                        </div>
+                        <p class="text-sm text-slate-700 bg-white p-3 rounded border border-slate-100 mb-2">Issue: ${req.concern}</p>
+                        ${req.status === 'Completed' ? `<p class="text-xs text-emerald-600 font-semibold mt-2">✓ Resolution sent to ${req.personalEmail}</p>` : `<p class="text-xs text-slate-500 mt-2">Pending staff review.</p>`}
+                    </div>
+                `;
+            }
+        });
+
+        // Admin Auth
+        const ADMIN_PASSCODE = "mcushs_admin@2026";
+        document.getElementById('adminLoginBtn').addEventListener('click', () => showModal(document.getElementById('adminLoginModal')));
+        document.getElementById('cancelLoginBtn').addEventListener('click', () => hideModal(document.getElementById('adminLoginModal')));
+
+        document.getElementById('submitLoginBtn').addEventListener('click', () => {
+            if (document.getElementById('adminCode').value === ADMIN_PASSCODE) {
+                isAdmin = true;
+                hideModal(document.getElementById('adminLoginModal'));
+                concernFormContainer.classList.add('hidden');
+                document.getElementById('statusCheckPanel').classList.add('hidden');
+                adminPanel.classList.remove('hidden');
+                footerNav.classList.add('hidden');
+                document.getElementById('adminCode').value = '';
+                listenForRequests();
+            } else {
+                showCustomMessage('Authentication failed', "error");
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            isAdmin = false;
+            adminPanel.classList.add('hidden');
+            concernFormContainer.classList.remove('hidden');
+            footerNav.classList.remove('hidden');
+        });
+
+        // Modals & Utilities
+        document.getElementById('closeSuccessBtn').addEventListener('click', () => hideModal(successModal));
+
+        document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+            hideModal(document.getElementById('confirmationModal'));
+            requestIdToDelete = null;
+        });
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (requestIdToDelete) {
+                try {
+                    await deleteDoc(doc(db, requestsCollectionPath, requestIdToDelete));
+                } catch (e) { showCustomMessage("Delete failed", "error"); }
+                finally { hideModal(document.getElementById('confirmationModal')); requestIdToDelete = null; }
+            }
+        });
+
+        function showModal(el) { el.classList.remove('hidden'); void el.offsetWidth; el.classList.add('show'); }
+        function hideModal(el) {
+            el.classList.remove('show');
+            el.addEventListener('transitionend', function h() { el.classList.add('hidden'); el.removeEventListener('transitionend', h); });
+        }
+
+        function showCustomMessage(msg, type = "info") {
+            const box = document.createElement('div');
+            box.className = `fixed bottom-6 right-6 p-4 rounded-xl shadow-xl text-white font-medium text-sm ${type === 'error' ? 'bg-rose-600' : 'bg-indigo-600'} z-[100] transition-opacity duration-300`;
+            box.textContent = msg;
+            document.body.appendChild(box);
+            setTimeout(() => { box.style.opacity = '0'; setTimeout(() => box.remove(), 300); }, 3000);
+        }
+
+        // Optional Audio Helper
+        function playNotificationSound() {
+            try {
+                const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); 
+                audio.volume = 0.5;
+                audio.play();
+            } catch (error) {
+                console.log("Audio notification blocked by browser policy.");
+            }
+        }
+
+        // Admin Data Rendering with Notifications
+        function listenForRequests() {
+            if (!userId) return;
+            onSnapshot(query(requestsCollection), (snapshot) => {
+                let newConcernsCount = 0;
+
+                if (!isInitialSnapshot) {
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            newConcernsCount++;
+                        }
+                    });
+                }
+
+                const reqs = [];
+                snapshot.forEach((d) => reqs.push({ id: d.id, ...d.data() }));
+                allRequests = reqs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                if (isAdmin) {
+                    renderAdminRequests(allRequests);
+                    
+                    if (newConcernsCount > 0) {
+                        showCustomMessage(`🔔 ${newConcernsCount} new concern(s) received!`, "info");
+                        playNotificationSound(); 
+                    }
+                }
+                
+                isInitialSnapshot = false; 
+            });
+        }
+
+        function renderAdminRequests(requests) {
+            requestsContainer.innerHTML = '';
+            if (requests.length === 0) {
+                document.getElementById('noRequests').classList.remove('hidden');
+            } else {
+                document.getElementById('noRequests').classList.add('hidden');
+                requests.forEach(req => {
+                    const el = document.createElement('div');
+                    el.className = 'p-6 border border-slate-200 rounded-xl bg-white shadow-sm';
+                    
+                    const displayPlatform = req.platform ? `<span class="px-2 py-1 rounded bg-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider">${req.platform}</span>` : '';
+                    
+                    el.innerHTML = `
+                        <div class="flex flex-col md:flex-row justify-between gap-6">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h4 class="font-bold text-lg text-slate-900">${req.name}</h4>
+                                    <span class="px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-wider">${req.designation}</span>
+                                    ${displayPlatform}
+                                    <span class="px-2 py-1 rounded text-xs font-bold uppercase tracking-wider ${req.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : req.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">${req.status}</span>
+                                </div>
+                                <div class="text-sm text-slate-500 mb-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    ${req.studentNumber ? `<p><strong>ID:</strong> ${req.studentNumber}</p>` : ''}
+                                    ${req.grade ? `<p><strong>Sec:</strong> ${req.grade}</p>` : ''}
+                                    <p><strong>Account:</strong> <span class="text-indigo-600">${req.email}</span></p>
+                                    <p><strong>Personal:</strong> <span class="text-indigo-600">${req.personalEmail || 'N/A'}</span></p>
+                                    <p><strong>Contact:</strong> ${req.contact}</p>
+                                    <p><strong>Platform:</strong> ${req.platform || 'N/A'}</p>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-lg text-slate-700 text-sm border border-slate-100">
+                                    <strong class="block mb-1 text-slate-900">User Concern:</strong>
+                                    ${req.concern}
+                                </div>
+                            </div>
+                            <div class="min-w-[180px] flex flex-col justify-between">
+                                <button data-id="${req.id}" class="edit-btn text-indigo-500 hover:text-indigo-700 text-sm font-semibold text-right mb-2 self-end transition-colors">Edit Details</button>
+                                <button data-id="${req.id}" data-status="${req.status}" class="override-status-btn text-amber-500 hover:text-amber-700 text-sm font-semibold text-right mb-2 self-end transition-colors">Override Status</button>
+                                <button data-id="${req.id}" class="delete-btn text-rose-500 hover:text-rose-700 text-sm font-semibold text-right mb-4 self-end transition-colors">Trash Record</button>
+                                <p class="text-xs text-slate-400 text-right mt-auto">Logged:<br>${new Date(req.createdAt).toLocaleString()}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t border-slate-100 bg-indigo-50/30 -mx-6 -mb-6 p-6 rounded-b-xl">
+                            <label class="block text-slate-800 font-semibold text-sm mb-2">Admin Action: Send Resolution</label>
+                            <textarea id="reply-${req.id}" rows="2" class="input-field bg-white mb-3 text-sm" placeholder="Input updated password or resolution instructions here..."></textarea>
+                            <button data-id="${req.id}" data-personal="${req.personalEmail}" data-msemail="${req.email}" class="send-res-btn w-full sm:w-auto bg-slate-900 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-slate-800 transition-colors shadow-sm text-sm flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                                Send to Personal Email
+                            </button>
+                        </div>
+                    `;
+                    requestsContainer.appendChild(el);
+                });
+            }
+        }
+
+        // --- TICKET EDITING LOGIC ---
+        document.getElementById('cancelEditBtn').addEventListener('click', () => hideModal(document.getElementById('editTicketModal')));
+
+        document.getElementById('saveEditBtn').addEventListener('click', async () => {
+            const id = document.getElementById('editTicketId').value;
+            const btn = document.getElementById('saveEditBtn');
+            
+            btn.disabled = true;
+            btn.innerHTML = 'Saving...';
+
+            try {
+                await updateDoc(doc(db, requestsCollectionPath, id), {
+                    name: document.getElementById('editName').value,
+                    studentNumber: document.getElementById('editStudentNumber').value,
+                    grade: document.getElementById('editGrade').value,
+                    email: document.getElementById('editMsEmail').value,
+                    personalEmail: document.getElementById('editPersonalEmail').value,
+                    platform: document.getElementById('editPlatform').value,
+                    contact: document.getElementById('editContact').value,
+                    concern: document.getElementById('editConcern').value
+                });
+                showCustomMessage('Ticket updated successfully', 'success');
+                hideModal(document.getElementById('editTicketModal'));
+            } catch (error) {
+                console.error(error);
+                showCustomMessage('Failed to update ticket.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Update Ticket';
+            }
+        });
+
+        // --- Master Event Listener for Admin Dashboard Buttons (Edit, Delete, Send) ---
+        requestsContainer.addEventListener('click', async (e) => {
+            
+            // Handle Edit Trigger
+            if (e.target.closest('.edit-btn')) {
+                const id = e.target.closest('.edit-btn').dataset.id;
+                const ticket = allRequests.find(r => r.id === id);
+                if (ticket) {
+                    document.getElementById('editTicketId').value = ticket.id;
+                    document.getElementById('editName').value = ticket.name || '';
+                    document.getElementById('editStudentNumber').value = ticket.studentNumber || '';
+                    document.getElementById('editGrade').value = ticket.grade || '';
+                    document.getElementById('editMsEmail').value = ticket.email || '';
+                    document.getElementById('editPersonalEmail').value = ticket.personalEmail || '';
+                    document.getElementById('editPlatform').value = ticket.platform || 'Microsoft Account';
+                    document.getElementById('editContact').value = ticket.contact || '';
+                    document.getElementById('editConcern').value = ticket.concern || '';
+                    showModal(document.getElementById('editTicketModal'));
+                }
+            }
+
+            // Handle Delete Trigger
+            if (e.target.closest('.delete-btn')) {
+                requestIdToDelete = e.target.closest('.delete-btn').dataset.id;
+                showModal(document.getElementById('confirmationModal'));
+            }
+
+            // Handle Status Override Trigger
+            if (e.target.closest('.override-status-btn')) {
+                const btn = e.target.closest('.override-status-btn');
+                const id = btn.dataset.id;
+                const currentStatus = btn.dataset.status;
+                
+                let nextStatus = 'In Progress';
+                if (currentStatus === 'Pending') nextStatus = 'In Progress';
+                else if (currentStatus === 'In Progress') nextStatus = 'Completed';
+                else if (currentStatus === 'Completed') nextStatus = 'Pending';
+
+                if (confirm(`Are you sure you want to change the status from "${currentStatus}" to "${nextStatus}"?`)) {
+                    btn.disabled = true;
+                    btn.innerHTML = 'Updating...';
+                    
+                    try {
+                        await updateDoc(doc(db, requestsCollectionPath, id), {
+                            status: nextStatus
+                        });
+                        showCustomMessage(`Status manually updated to ${nextStatus}`, 'success');
+                    } catch (error) {
+                        console.error(error);
+                        showCustomMessage('Failed to override status.', 'error');
+                        btn.disabled = false;
+                        btn.innerHTML = 'Override Status';
+                    }
+                }
+            }
+
+            // Handle Automated Email / Resolution Processing with Fallback
+            const sendBtn = e.target.closest('.send-res-btn');
+            if (sendBtn) {
+                const id = sendBtn.dataset.id;
+                const personalEmail = sendBtn.dataset.personal;
+                const msEmail = sendBtn.dataset.msemail;
+                const resolutionText = document.getElementById(`reply-${id}`).value;
+
+                if (!resolutionText.trim()) {
+                    showCustomMessage("Please input a resolution instruction.", "error");
+                    return;
+                }
+
+                sendBtn.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Sending...`;
+                sendBtn.disabled = true;
+
+                const completeResolution = async () => {
+                    await updateDoc(doc(db, requestsCollectionPath, id), {
+                        status: 'Completed',
+                        adminResolution: resolutionText,
+                        resolvedAt: new Date().toISOString()
+                    });
+                    showCustomMessage("Resolution processed and ticket closed.", "success");
+                };
+
+                const emailParams = {
+                    to_email: personalEmail,
+                    ms_email: msEmail,
+                    resolution_message: resolutionText
+                };
+                
+                try {
+                    await sendEmailWithFallback('resolution', emailParams);
+                    await completeResolution();
+                } catch (err) {
+                    console.error("Email API failed:", err);
+                    
+                    // Fallback to local mail client if BOTH EmailJS accounts fail
+                    try {
+                        await completeResolution();
+                        const subject = encodeURIComponent("Resolution: Account Request");
+                        const body = encodeURIComponent(`Hello,\n\nRegarding your Account Request (${msEmail}), here are your instructions/details:\n\n${resolutionText}\n\nRegards,\nK-10 ICT Support`);
+                        window.location.href = `mailto:${personalEmail}?subject=${subject}&body=${body}`;
+                    } catch (innerErr) {
+                        showCustomMessage("Failed to update status in database.", "error");
+                        sendBtn.innerHTML = 'Send to Personal Email';
+                        sendBtn.disabled = false;
+                    }
+                }
+            }
+        });
+
+        document.getElementById('exportCsvBtn').addEventListener('click', () => {
+            if (allRequests.length === 0) return showCustomMessage("No data to export.", "error");
+
+            const headers = ['Student Number', 'Name', 'Designation', 'Grade Level', 'Platform', 'Account Email', 'Personal Email', 'Contact', 'Concern', 'Status', 'Date'];
+            const csv = [
+                headers.join(','),
+                ...allRequests.map(r => [
+                    r.studentNumber || '',
+                    `"${r.name}"`,
+                    r.designation,
+                    `"${r.grade || ''}"`,
+                    r.platform || 'N/A',
+                    r.email,
+                    r.personalEmail || '',
+                    r.contact,
+                    `"${r.concern.replace(/"/g, '""')}"`,
+                    r.status,
+                    new Date(r.createdAt).toLocaleDateString()
+                ].join(','))
+            ].join('\r\n');
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+            link.download = `k10_concerns_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+        });
+    </script>
+</body>
+
+</html>
